@@ -2,6 +2,8 @@
 
 This was originally created by **KUDr**, and posted on [C&C Guild Forums](https://cncguild.net/item-133).
 
+The [archive](https://github.com/MicaelJarniac/RefPack-Tool/tree/archive) branch has the original contents from the reuploaded archive file.
+
 ## About RefPack
 
 There's a lot of information about [RefPack on the Niotso Wiki](http://wiki.niotso.org/RefPack), but it's essentially a compression format made by EA and used in many of its games.

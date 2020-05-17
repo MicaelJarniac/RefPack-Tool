@@ -1,0 +1,76 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "doc", "doc", "{56A793E5-18F8-478D-BBF8-6C2AB9BD61AF}"
+	ProjectSection(SolutionItems) = preProject
+		doc\ref_pack_compression.txt = doc\ref_pack_compression.txt
+		doc\ref_pack_format.txt = doc\ref_pack_format.txt
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "include", "include", "{EA8A73C0-22E2-4ED0-A650-87E3D9F58EED}"
+	ProjectSection(SolutionItems) = preProject
+		include\btypes.h = include\btypes.h
+		include\files.h = include\files.h
+		include\misc.h = include\misc.h
+		include\refpack.h = include\refpack.h
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "misc", "misc", "{160AB3CC-4C4F-4B98-9FA2-4E34617A5BF0}"
+	ProjectSection(SolutionItems) = preProject
+		include\misc\blob.hpp = include\misc\blob.hpp
+		include\misc\con_color.h = include\misc\con_color.h
+		include\misc\countedptr.hpp = include\misc\countedptr.hpp
+		include\misc\crc32.hpp = include\misc\crc32.hpp
+		include\misc\endianess.h = include\misc\endianess.h
+		include\misc\err_info.h = include\misc\err_info.h
+		include\misc\helpers.hpp = include\misc\helpers.hpp
+		include\misc\macros.h = include\misc\macros.h
+		include\misc\str.hpp = include\misc\str.hpp
+		include\misc\strapi.hpp = include\misc\strapi.hpp
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "big", "big", "{F125055A-4E22-4D36-BB9A-97AA179910C7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RefPack", "RefPack", "{9157BAED-F0A8-464F-8937-65556E93D2BD}"
+	ProjectSection(SolutionItems) = preProject
+		include\refpack\refpack_base.h = include\refpack\refpack_base.h
+		include\refpack\refpack_compress.h = include\refpack\refpack_compress.h
+		include\refpack\refpack_decompress.h = include\refpack\refpack_decompress.h
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "compress", "src\compress\compress.vcproj", "{AA65AC6B-D667-4311-A673-20FBEDB92E39}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "files", "files", "{03DEAAE4-E5D8-4509-BB38-EA3EE99E4A44}"
+	ProjectSection(SolutionItems) = preProject
+		include\files\file_binary.h = include\files\file_binary.h
+		include\files\stream_in.h = include\files\stream_in.h
+		include\files\stream_out.h = include\files\stream_out.h
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "decompress", "src\decompress\decompress.vcproj", "{45401B22-745A-41C6-9CD4-9E84BC2B6D49}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AA65AC6B-D667-4311-A673-20FBEDB92E39}.Debug|Win32.ActiveCfg = Debug|Win32
+		{AA65AC6B-D667-4311-A673-20FBEDB92E39}.Debug|Win32.Build.0 = Debug|Win32
+		{AA65AC6B-D667-4311-A673-20FBEDB92E39}.Release|Win32.ActiveCfg = Release|Win32
+		{AA65AC6B-D667-4311-A673-20FBEDB92E39}.Release|Win32.Build.0 = Release|Win32
+		{45401B22-745A-41C6-9CD4-9E84BC2B6D49}.Debug|Win32.ActiveCfg = Debug|Win32
+		{45401B22-745A-41C6-9CD4-9E84BC2B6D49}.Debug|Win32.Build.0 = Debug|Win32
+		{45401B22-745A-41C6-9CD4-9E84BC2B6D49}.Release|Win32.ActiveCfg = Release|Win32
+		{45401B22-745A-41C6-9CD4-9E84BC2B6D49}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{160AB3CC-4C4F-4B98-9FA2-4E34617A5BF0} = {EA8A73C0-22E2-4ED0-A650-87E3D9F58EED}
+		{F125055A-4E22-4D36-BB9A-97AA179910C7} = {EA8A73C0-22E2-4ED0-A650-87E3D9F58EED}
+		{9157BAED-F0A8-464F-8937-65556E93D2BD} = {EA8A73C0-22E2-4ED0-A650-87E3D9F58EED}
+		{03DEAAE4-E5D8-4509-BB38-EA3EE99E4A44} = {EA8A73C0-22E2-4ED0-A650-87E3D9F58EED}
+	EndGlobalSection
+EndGlobal

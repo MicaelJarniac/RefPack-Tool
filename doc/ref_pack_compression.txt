@@ -1,0 +1,141 @@
+========================================================
+
+       Simplified RefPack compression algorithm
+
+(http://mazanec1.netbox.cz/big/ref_pack_compression.txt)
+========================================================
+
+Used in compress.exe (0.10 ~ first alpha) by KUDr
+      (it is bit simplified in this doc)
+
+
+
+This document should be used only for learning more
+about how the RefPack compression works. It is not
+suitable for any real work as it would be too slow
+and would use too much memory. Feel free to add
+your comments how it can be improved and/or write
+your own document/code using better way.
+
+
+See also:
+ 
+(1) "RefPack compressed stream format"
+   (http://mazanec1.netbox.cz/big/ref_pack_format.txt)
+
+
+
+==========================================
+Step 1 - allocate memory for output
+==========================================
+
+Allocate enough memory for the compressed stream. When writing
+into stream make sure there is enough space in it (reallocate
+if needed).
+
+
+==========================================
+Step 2 - write header into output stream
+==========================================
+
+See (1)/1. header (at beginning of the stream)
+
+
+- Write RefPack signature (2 bytes) into output
+- write source file size (3 or 4 bytes big-endian)
+
+
+
+==========================================
+Step 3 - read source file into memory
+==========================================
+
+Fairly clear, no further comments needed here.
+
+
+
+=================================================
+Step 4 - initialize some variables used later
+=================================================
+
+byte    *src_begin = <source stream in memory>
+byte    *src_end = src_begin + <source file size in bytes>
+byte    *src_imm_begin = src_begin;   // where we will copy immediate bytes from
+byte    *src_imm_end = src_imm_begin; // end of immediate data, beginning of the source copy target
+byte    *src_copy_from;               // where we can copy some source bytes from
+uint32  best_score = 0;               // how many bytes can be reused (copied) from the source
+
+
+
+==========================================
+Step 5 - scan for source data to copy
+==========================================
+
+byte    *scan_first = max(src_begin, src_imm_end - 0x20000)  // scan begins here
+byte    *scan_last  = src_imm_end - 1  // scan ends here
+byte    *scan; // loop variable (values in the range <scan_first..scan_last>
+
+Scan the range <scan_begin..scan_end> for the best matching substring. You will compare
+the substring that begins on scan position against the substring that begins src_imm_end.
+The size of matching substring (how many bytes from both substrings equal) is current
+score. The objective is to find the best matching substring (one with the highest score).
+The best score you put into best_score variable.
+
+
+
+
+================================================================
+Step 6 - decide between immediate bytes and source copy/reuse
+================================================================
+
+Now you need to decide if the best score is good enough to bother copying the data. You
+can for example tell that score >= 5 is good enough.
+
+IF best_score IS NOT 'good enough' THEN:
+  - increment src_imm_end by 1 (one more byte needed to provide as immediate bytes)
+  - loop back (goto) Step 5 - scan for source data to copy
+
+Otherwise continue with the following steps.
+
+
+
+===================================================
+Step 7 - write immediate bytes bytes into stream
+===================================================
+
+See (1)/2. Tag_ImmediateData
+    (1)/3. Tag_Combined_Short
+    (1)/4. Tag_Combined_Medium
+and (1)/5. Tag_Combined_Large
+
+Use the appropriate combination of tags (see above) to:
+ - provide immediate data
+ - IDS = src_imm_end - src_imm_begin
+ - COPY = best_score
+ - OFFSET = src_imm_end - scan;
+
+
+Then update your position variables:
+ src_imm_begin = src_imm_end + best_score
+ src_imm_end = src_imm_begin;
+
+
+
+==========================================
+Step 8 - loop or finish
+==========================================
+
+If you have reached the source stream end (src_end), use
+ (1)/2. Tag_ImmediateData
+and finish the compression
+
+Otherwise loop back (goto) Step 5 - scan for source data to copy
+
+
+
+
+
+
+
+
+

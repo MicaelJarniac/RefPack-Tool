@@ -1,0 +1,154 @@
+=============================================
+
+  RefPack compressed stream format
+
+=============================================
+
+  If you encounter any mistake/inaccuracy,
+        notify me please (KUDr)
+
+
+
+The following tag types are used inside a stream:
+
+========================================
+1. header (at beginning of the stream)
+========================================
+ - size = 5 to 10 bytes
+
+ 1.a: signature/flags:
+  - size = 2 bytes - at beginning of stream
+
+            Byte 1      Byte 2
+  ---------------------------------
+  bit      7654 3210   7654 3210
+  value    LU01 000A   1111 1011
+           ||      |
+           ||      \------ Additional big-endian number (3 or 4 bytes) in the header
+           |\------------- Unknown (usually 0)
+           \---------------Large files (following numbers are 4 byte long instead 3)
+
+ 1.b: uncompressed size (big-endian number)
+  - size 4 bytes if bit 1.a.L == 1, 3 bytes otherwise
+
+ 1.c: unknown optional number (big-endian)
+  - size 3 or 4 bytes (same as 1.b)
+  - present only if bit 1.a.A == 1
+
+
+
+
+======================
+2. Tag_ImmediateData
+======================
+
+Usage: Up to 112 bytes of immediate data
+
+ - size 1 + IDS bytes
+
+ 2.a: 1 byte prefix:
+           Byte 1
+ ---------------------------------
+ bit      7654 3210
+ value    111M MMMM
+                |
+                \------- 5 bits of immediate data size (M):
+                          - if M is between 0x00..0x1B then
+                              immediate data size is: IDS = 4 * (M + 1), and STOP flag is not set
+                          - if M is between 0x1C..0xFF then
+                              immediate data size is: IDS = (M - 0x1C) and stop flag is set
+
+ if STOP flag was set:
+  2.b: 0..3 bytes of immediate data (to be copied into output stream and then STOP decompression)
+ else
+  2.b: 4, 8, 12, ... 108, or 112 bytes (~ 4..112 step 4) bytes of immediate data (to be copied into output stream)
+
+
+
+
+=======================
+3. Tag_Combined_Short
+=======================
+
+Usage: Up to 3 bytes of immediate data + up to 10 bytes to copy from uncompressed stream
+
+ - size 2 + IDS bytes:
+
+ 3.a: 2 bytes prefix:
+
+            Byte 1      Byte 2
+  ---------------------------------
+  bit      7654 3210   7654 3210
+  value    0TTC CCMM   tttt tttt
+             |  |  |      |
+             |  |  \------+--------- 2 (M) bits of immediate data size IDS = M                    (values 0..3)
+             |  |         |
+             |  \---------+--------- 3 (C) bits of copy size           COPY = C + 3               (values 3..0x0A)
+             |            |
+             \------------\--------- 3 (T) + 8 (t) bits of copy offset OFFSET = T * 0x100 + t + 1 (values 1..0x400)
+
+
+ 3.b: IDS (0..3) bytes of immediate data
+ 3.c: no data. In uncompressed stream move <OFFSET> bytses back from the current position
+      and copy <COPY> bytes to from there to the current position
+
+
+
+
+========================
+4. Tag_Combined_Medium
+========================
+
+Usage: Up to 3 bytes of immediate data + up to 67 bytes to copy from uncompressed stream
+
+ - size 3 + IDS bytes:
+
+ 4.a: 3 bytes prefix:
+
+            Byte 1      Byte 2      Byte 3
+  ---------------------------------------------
+  bit      7654 3210   7654 3210   7654 3210
+  value    10CC CCCC   MMTT TTTT   tttt tttt
+                 |     |     |        |
+                 |     |     \--------+----- 6 (T) + 8 (t) bits of copy offset OFFSET = T * 0x100 + t + 1 (values 1..0x4000)
+                 |     |
+                 |     \-------------------- 2 (M) bits of immediate data size IDS = M                    (values 0..3)
+                 | 
+                 \-------------------------- 3 (C) bits of copy size           COPY = C + 4               (values 4..0x43)
+
+ 4.b: IDS (0..3) bytes of immediate data
+ 4.c: no data. In uncompressed stream move <OFFSET> bytses back from the current position
+      and copy <COPY> bytes to from there to the current position
+
+
+
+
+=======================
+5. Tag_Combined_Large
+=======================
+
+Usage: Up to 3 bytes of immediate data + up to 1028 bytes to copy from uncompressed stream
+
+ - size 4 + IDS bytes:
+
+ 5.a: 4 bytes prefix:
+
+            Byte 1      Byte 2      Byte 3      Byte 4
+  ---------------------------------------------------------
+  bit      7654 3210   7654 3210   7654 3210   7654 3210
+  value    110R CCMM   TTTT TTTT   tttt tttt   cccc cccc
+              |  | |      |           |           |
+              \--+-+------\-----------\-----------+--- 1 (R) + 8 (T) + 8 (t) bits of copy offset
+                 | |                              |     OFFSET = R * 0x10000 + T * 0x100 + t + 1          (values 1..0x20000)
+                 | |                              |
+                 \-+------------------------------\--- 2 (C) + 8 (c) bits of copy size
+                   |                                    COPY = C * 0x100 + c + 5                          (values 5..0x404)
+                   |
+                   \---------------------------------- 2 (M) bits of immediate data size IDS = M          (values 0..3)
+
+ 5.b: IDS (0..3) bytes of immediate data
+ 5.c: no data. In uncompressed stream move <OFFSET> bytses back from the current position
+      and copy <COPY> bytes to from there to the current position
+
+
+
